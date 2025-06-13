@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './CheckoutPage.css';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
-const CheckoutPage = ({ cartItems }) => {
+const CheckoutPage = ({ cartItems, user, onOrderSuccess }) => {
   const [deliveryData, setDeliveryData] = useState({
     cep: '',
     address: '',
@@ -15,16 +15,34 @@ const CheckoutPage = ({ cartItems }) => {
     city: '',
     state: ''
   });
+  
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const [usingPrincipalAddress, setUsingPrincipalAddress] = useState(true);
+
+  useEffect(() => {
+    const principalAddress = user?.enderecos?.find(addr => addr.principal) || user?.enderecos?.[0];
+    
+    if (principalAddress) {
+      setDeliveryData({
+        cep: principalAddress.cep || '',
+        address: principalAddress.logradouro || '',
+        number: principalAddress.numero || '',
+        complement: principalAddress.complemento || '',
+        neighborhood: principalAddress.bairro || '',
+        city: principalAddress.cidade || '',
+        state: principalAddress.estado || ''
+      });
+      setUsingPrincipalAddress(true);
+    }
+  }, [user]);
 
   const handleCheckout = async () => {
     try {
       setIsLoading(true);
       setError('');
 
-      // Validations
       if (!cartItems || cartItems.length === 0) {
         setError('Seu carrinho está vazio');
         setIsLoading(false);
@@ -37,7 +55,6 @@ const CheckoutPage = ({ cartItems }) => {
         return;
       }
 
-      // Validate required fields
       const requiredFields = ['cep', 'address', 'number', 'city', 'state'];
       const missingFields = requiredFields.filter(field => !deliveryData[field]);
 
@@ -47,30 +64,29 @@ const CheckoutPage = ({ cartItems }) => {
         return;
       }
 
-      // Create order
-      const response = await axios.post(
-        `${API_URL}/api/orders`,
-        {
-          items: cartItems.map(item => ({
-            product: item._id, // Certifique-se que está enviando o ID correto
-            name: item.nome,
-            type: item.tipo,
-            price: item.price,
-            quantity: item.quantity,
-            image: item.imagem
-          })),
-          shippingAddress: deliveryData,
-          total: cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0) + 15
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
+      // Preparar os dados do pedido
+      const orderData = {
+        items: cartItems.map(item => ({
+          _id: item._id,
+          nome: item.nome,
+          tipo: item.tipo,
+          price: item.price,
+          quantity: item.quantity,
+          imagem: item.imagem
+        })),
+        shippingAddress: deliveryData,
+        total: cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0) + 15
+      };
 
-      // Redirect to success page with the new order ID
+      // Enviar para o backend
+      const response = await axios.post(`${API_URL}/api/orders`, orderData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      // Redirecionar para página de sucesso com o ID do pedido
       navigate(`/order/${response.data._id}/success`);
 
     } catch (error) {
@@ -84,8 +100,42 @@ const CheckoutPage = ({ cartItems }) => {
     }
   };
 
+  const handleUsePrincipalAddress = () => {
+    const principalAddress = user?.enderecos?.find(addr => addr.principal) || user?.enderecos?.[0];
+    
+    if (principalAddress) {
+      setDeliveryData({
+        cep: principalAddress.cep || '',
+        address: principalAddress.logradouro || '',
+        number: principalAddress.numero || '',
+        complement: principalAddress.complemento || '',
+        neighborhood: principalAddress.bairro || '',
+        city: principalAddress.cidade || '',
+        state: principalAddress.estado || ''
+      });
+      setUsingPrincipalAddress(true);
+    }
+  };
+
+  const handleUseNewAddress = () => {
+    setDeliveryData({
+      cep: '',
+      address: '',
+      number: '',
+      complement: '',
+      neighborhood: '',
+      city: '',
+      state: ''
+    });
+    setUsingPrincipalAddress(false);
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    
+    if (usingPrincipalAddress) {
+      setUsingPrincipalAddress(false);
+    }
 
     if (name === 'cep') {
       const numericValue = value.replace(/\D/g, '');
@@ -99,6 +149,8 @@ const CheckoutPage = ({ cartItems }) => {
       setDeliveryData(prev => ({ ...prev, [name]: value }));
     }
   };
+
+  const principalAddress = user?.enderecos?.find(addr => addr.principal) || user?.enderecos?.[0];
 
   return (
     <div className="checkout-container">
@@ -138,6 +190,39 @@ const CheckoutPage = ({ cartItems }) => {
           <div className="delivery-form">
             <h2>Informações de Entrega</h2>
 
+            <div className="address-selection">
+              {principalAddress && (
+                <div className="address-option">
+                  <input
+                    type="radio"
+                    id="principal-address"
+                    name="addressType"
+                    checked={usingPrincipalAddress}
+                    onChange={handleUsePrincipalAddress}
+                  />
+                  <label htmlFor="principal-address">
+                    Usar endereço principal
+                    <div className="address-details">
+                      {`${principalAddress.logradouro}, ${principalAddress.numero}`}
+                      <br />
+                      {`${principalAddress.bairro}, ${principalAddress.cidade} - ${principalAddress.estado}`}
+                    </div>
+                  </label>
+                </div>
+              )}
+              
+              <div className="address-option">
+                <input
+                  type="radio"
+                  id="new-address"
+                  name="addressType"
+                  checked={!usingPrincipalAddress}
+                  onChange={handleUseNewAddress}
+                />
+                <label htmlFor="new-address">Digitar outro endereço</label>
+              </div>
+            </div>
+
             <form>
               <div className="form-group">
                 <label htmlFor="cep">CEP *</label>
@@ -163,6 +248,7 @@ const CheckoutPage = ({ cartItems }) => {
                   value={deliveryData.address}
                   onChange={handleInputChange}
                   required
+                  disabled={usingPrincipalAddress}
                 />
               </div>
 
@@ -177,6 +263,7 @@ const CheckoutPage = ({ cartItems }) => {
                     value={deliveryData.number}
                     onChange={handleInputChange}
                     required
+                    disabled={usingPrincipalAddress}
                   />
                 </div>
                 <div className="form-group">
@@ -188,6 +275,7 @@ const CheckoutPage = ({ cartItems }) => {
                     placeholder="Apto, Bloco, etc."
                     value={deliveryData.complement}
                     onChange={handleInputChange}
+                    disabled={usingPrincipalAddress}
                   />
                 </div>
               </div>
@@ -201,6 +289,7 @@ const CheckoutPage = ({ cartItems }) => {
                   value={deliveryData.neighborhood}
                   onChange={handleInputChange}
                   required
+                  disabled={usingPrincipalAddress}
                 />
               </div>
 
@@ -214,6 +303,7 @@ const CheckoutPage = ({ cartItems }) => {
                     value={deliveryData.city}
                     onChange={handleInputChange}
                     required
+                    disabled={usingPrincipalAddress}
                   />
                 </div>
                 <div className="form-group">
@@ -226,6 +316,7 @@ const CheckoutPage = ({ cartItems }) => {
                     onChange={handleInputChange}
                     maxLength="2"
                     required
+                    disabled={usingPrincipalAddress}
                   />
                 </div>
               </div>

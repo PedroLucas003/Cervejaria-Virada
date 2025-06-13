@@ -423,3 +423,52 @@
 .or-divider::after {
   margin-left: 10px;
 }
+.address-selection {
+  margin-bottom: 25px;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 20px;
+}
+
+.address-selection h4 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #333;
+  font-weight: 600;
+}
+
+.address-option {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 15px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.address-option:hover {
+  background-color: #f9f9f9;
+}
+
+.address-option input[type="radio"] {
+  margin-top: 4px;
+  margin-right: 15px;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.address-option label {
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: #555;
+  width: 100%;
+}
+
+.address-option label .address-details {
+  font-size: 0.9rem;
+  color: #777;
+  font-weight: 400;
+}

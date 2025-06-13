@@ -23,10 +23,12 @@ connectDB();
 const authRoutes = require('./src/routes/authRoutes');
 const beerRoutes = require('./src/routes/beerRoutes');
 const userRoutes = require('./src/routes/userRoutes');
+const orderRoutes = require('./src/routes/orderRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/beers', beerRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/orders', orderRoutes);
 
 // Rotas básicas e manipuladores de erro
 app.get('/', (req, res) => {

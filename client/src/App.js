@@ -203,6 +203,7 @@ function App() {
             authState.isAuthenticated ? (
               <CheckoutPage
                 cartItems={cart}
+                // Adicione esta linha para passar os dados do usuário
                 user={authState.user}
                 onOrderSuccess={() => {
                   setCart([]);
@@ -223,7 +224,7 @@ function App() {
           } />
 
           <Route path="/order-success" element={<OrderSuccessPage />} />
-          
+
           {/* Adicione estas novas rotas */}
           <Route path="/success" element={<SuccessPage />} />
           <Route path="/error" element={<ErrorPage />} />
