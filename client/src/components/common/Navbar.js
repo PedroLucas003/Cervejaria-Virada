@@ -57,6 +57,10 @@ const Navbar = ({ isAuthenticated, onLogout, user, cartItems }) => {
                       <i className="fas fa-user"></i> Meu Perfil
                     </Link>
 
+                    <Link to="/my-orders" onClick={() => setMobileMenuOpen(false)} className="mobile-menu-item">
+                      <i className="fas fa-receipt"></i> Meus Pedidos
+                    </Link>
+
                     {user?.isAdmin && (
                       <>
                         <Link to="/admin/dashboard" onClick={() => setMenuOpen(false)}>
@@ -64,6 +68,9 @@ const Navbar = ({ isAuthenticated, onLogout, user, cartItems }) => {
                         </Link>
                         <Link to="/admin/users" onClick={() => setMenuOpen(false)}>
                           <i className="fas fa-users"></i> Gerenciar Usuários
+                        </Link>
+                        <Link to="/admin/orders" onClick={() => setMenuOpen(false)}>
+                          <i className="fas fa-list-alt"></i> Todos os Pedidos
                         </Link>
                       </>
                     )}
@@ -107,6 +114,10 @@ const Navbar = ({ isAuthenticated, onLogout, user, cartItems }) => {
                 <i className="fas fa-user"></i> Meu Perfil
               </Link>
 
+              <Link to="/my-orders" onClick={() => setMenuOpen(false)}>
+                <i className="fas fa-receipt"></i> Meus Pedidos
+              </Link>
+
               {user?.isAdmin && (
                 <>
                   <Link to="/admin/dashboard" onClick={() => setMobileMenuOpen(false)} className="mobile-menu-item">
@@ -114,6 +125,9 @@ const Navbar = ({ isAuthenticated, onLogout, user, cartItems }) => {
                   </Link>
                   <Link to="/admin/users" onClick={() => setMobileMenuOpen(false)} className="mobile-menu-item">
                     <i className="fas fa-users"></i> Gerenciar Usuários
+                  </Link>
+                  <Link to="/admin/orders" onClick={() => setMobileMenuOpen(false)} className="mobile-menu-item">
+                    <i className="fas fa-list-alt"></i> Todos os Pedidos
                   </Link>
                 </>
               )}

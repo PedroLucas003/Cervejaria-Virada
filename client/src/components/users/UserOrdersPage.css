@@ -1,0 +1,98 @@
+.user-orders-container {
+  max-width: 1200px; /* Aumentei a largura máxima */
+  margin: 2rem auto;
+  padding: 1rem 2rem;
+}
+
+.orders-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); /* Grid responsivo */
+  gap: 1.5rem;
+}
+
+.order-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Faz os cards terem a mesma altura */
+}
+
+.order-header {
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Divide o cabeçalho em 2 colunas */
+  gap: 0.5rem;
+}
+
+.order-header h3 {
+  margin: 0;
+  grid-column: span 2; /* Faz o título ocupar as 2 colunas */
+}
+
+.order-body {
+  flex-grow: 1; /* Faz o corpo ocupar o espaço restante */
+  overflow-y: auto; /* Adiciona scroll se necessário */
+}
+
+.order-item {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0;
+  gap: 1rem;
+}
+
+.item-image {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.item-details {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.status {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.status-Entregue {
+  background-color: #e6f7ee;
+  color: #00a854;
+}
+
+.status-Processando {
+  background-color: #fff7e6;
+  color: #fa8c16;
+}
+
+.status-Cancelado {
+  background-color: #fff1f0;
+  color: #f5222d;
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 768px) {
+  .orders-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .order-header {
+    grid-template-columns: 1fr;
+  }
+  
+  .order-header h3 {
+    grid-column: span 1;
+  }
+}

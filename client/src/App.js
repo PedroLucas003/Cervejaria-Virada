@@ -11,11 +11,11 @@ import CheckoutPage from './components/checkout/CheckoutPage';
 import OrderSuccessPage from './components/checkout/OrderSuccessPage';
 import EditUserPage from './components/users/EditUserPage';
 import UserProfilePage from './components/users/UserProfilePage';
-import UserOrdersPage from './components/orders/UserOrdersPage';
-// Importe as novas páginas
 import SuccessPage from './components/checkout/SuccessPage';
 import ErrorPage from './components/checkout/ErrorPage';
 import PendingPage from './components/checkout/PendingPage';
+import UserOrdersPage from './components/users/UserOrdersPage';
+import AdminOrdersPage from './components/users/AdminOrdersPage';
 import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
@@ -175,6 +175,17 @@ function App() {
             )
           } />
 
+          <Route path="/my-orders" element={
+            authState.isAuthenticated ? <UserOrdersPage /> : <Navigate to="/login" state={{ from: '/my-orders' }} />
+          } />
+          <Route path="/admin/orders" element={
+            authState.isAuthenticated && authState.user?.isAdmin ? (
+              <AdminOrdersPage />
+            ) : (
+              <Navigate to="/login" />
+            )
+          } />
+
           <Route path="/admin/dashboard" element={
             authState.isAuthenticated && authState.user?.isAdmin ? (
               <BeerDashboard user={authState.user} />
@@ -212,14 +223,6 @@ function App() {
               />
             ) : (
               <Navigate to="/login" state={{ from: '/checkout' }} />
-            )
-          } />
-
-          <Route path="/my-orders" element={
-            authState.isAuthenticated ? (
-              <UserOrdersPage />
-            ) : (
-              <Navigate to="/login" state={{ from: '/my-orders' }} />
             )
           } />
 
