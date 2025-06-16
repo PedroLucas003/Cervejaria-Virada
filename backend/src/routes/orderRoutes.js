@@ -1,12 +1,18 @@
+// src/routes/orderRoutes.js (VERSÃO CORRIGIDA)
 const express = require('express');
 const router = express.Router();
 const orderController = require('../controllers/orderController');
 const authMiddleware = require('../middlewares/authMiddleware');
-const adminMiddleware = require('../middlewares/adminMiddleware'); // Verifique se este arquivo exporta uma função de middleware
+const adminMiddleware = require('../middlewares/adminMiddleware');
 
 // Aplica o middleware de autenticação para todas as rotas de pedido
-// Qualquer requisição a /api/orders/* precisará de um token válido
 router.use(authMiddleware);
+
+// ==========================================================
+// LINHA ADICIONADA: Rota para um usuário CRIAR um novo pedido
+// POST /api/orders
+router.post('/', orderController.createOrder); // <<<<<<<<<<< ADICIONE ESTA LINHA
+// ==========================================================
 
 // Rota para um usuário buscar seus próprios pedidos
 // GET /api/orders/myorders

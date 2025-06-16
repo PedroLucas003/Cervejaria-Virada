@@ -98,18 +98,16 @@ const orderSchema = new mongoose.Schema({
   },
 
   // Valores financeiros
-  subtotal: {
-    type: Number,
-    required: true
-  },
-  shippingCost: {
-    type: Number,
-    default: 15.00
-  },
-  total: {
-    type: Number,
-    required: true
-  },
+ subtotal: {
+  type: Number // Removido 'required: true'
+},
+shippingCost: {
+  type: Number,
+  default: 15.00
+},
+total: {
+  type: Number // Removido 'required: true'
+},
 
   // Status e tracking
   status: {
