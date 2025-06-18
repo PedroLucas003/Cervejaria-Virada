@@ -33,9 +33,9 @@ const LoginPage = ({ onLogin, onError }) => {
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
-  // Funções de máscara
+  // Mask functions
   const applyCpfMask = (value) => {
     return value
       .replace(/\D/g, '')
@@ -60,7 +60,7 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
       .replace(/(-\d{3})\d+?$/, '$1');
   };
 
-  // Validações
+  // Validation functions
   const validateEmail = (email) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email);
@@ -70,6 +70,7 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
     cpf = cpf.replace(/\D/g, '');
     if (cpf.length !== 11) return false;
     
+    // CPF validation algorithm
     let sum = 0;
     let remainder;
     
@@ -97,6 +98,7 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
     return password.length >= 6;
   };
 
+  // Event handlers
   const handleChange = (e) => {
     const { name, value } = e.target;
     
@@ -146,7 +148,7 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
     setIsLoading(true);
     setErrors({});
 
-    // Validações básicas
+    // Basic validations
     const newErrors = {};
 
     if (!isLoginMode) {
@@ -259,11 +261,35 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
   const toggleMode = () => {
     setIsLoginMode(!isLoginMode);
     setErrors({});
+    setFormData({
+      nomeCompleto: '',
+      email: '',
+      cpf: '',
+      senha: '',
+      confirmarSenha: '',
+      dataNascimento: '',
+      telefone: '',
+      enderecos: [{
+        cep: '',
+        logradouro: '',
+        numero: '',
+        complemento: '',
+        bairro: '',
+        cidade: '',
+        estado: '',
+        principal: true
+      }]
+    });
+    setMaskedValues({
+      cpf: '',
+      telefone: '',
+      cep: ''
+    });
   };
 
   return (
     <div className="login-container">
-      <div className="login-card">
+      <div className="form-container">
         <h2>{isLoginMode ? 'Login' : 'Cadastre-se'}</h2>
         <p className="subtitle">
           {isLoginMode 
@@ -277,24 +303,23 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
           </div>
         )}
 
-        <form onSubmit={handleSubmit}>
+        <form className="form" onSubmit={handleSubmit}>
           {!isLoginMode && (
             <>
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="nomeCompleto">Nome Completo</label>
-                  <input
-                    type="text"
-                    id="nomeCompleto"
-                    name="nomeCompleto"
-                    value={formData.nomeCompleto}
-                    onChange={handleChange}
-                    required
-                  />
-                  {errors.nomeCompleto && (
-                    <span className="field-error">{errors.nomeCompleto}</span>
-                  )}
-                </div>
+              <div className="form-group">
+                <label htmlFor="nomeCompleto">Nome Completo</label>
+                <input
+                  type="text"
+                  id="nomeCompleto"
+                  name="nomeCompleto"
+                  value={formData.nomeCompleto}
+                  onChange={handleChange}
+                  placeholder=" "
+                  required
+                />
+                {errors.nomeCompleto && (
+                  <span className="field-error">{errors.nomeCompleto}</span>
+                )}
               </div>
 
               <div className="form-row">
@@ -307,7 +332,7 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
                     value={maskedValues.cpf}
                     onChange={handleCpfChange}
                     maxLength="14"
-                    placeholder="000.000.000-00"
+                    placeholder=" "
                     required
                   />
                   {errors.cpf && (
@@ -323,6 +348,7 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
                     name="dataNascimento"
                     value={formData.dataNascimento}
                     onChange={handleChange}
+                    placeholder=" "
                     required
                   />
                   {errors.dataNascimento && (
@@ -331,23 +357,21 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
                 </div>
               </div>
 
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="telefone">Telefone</label>
-                  <input
-                    type="tel"
-                    id="telefone"
-                    name="telefone"
-                    value={maskedValues.telefone}
-                    onChange={handlePhoneChange}
-                    maxLength="15"
-                    placeholder="(00) 00000-0000"
-                    required
-                  />
-                  {errors.telefone && (
-                    <span className="field-error">{errors.telefone}</span>
-                  )}
-                </div>
+              <div className="form-group">
+                <label htmlFor="telefone">Telefone</label>
+                <input
+                  type="tel"
+                  id="telefone"
+                  name="telefone"
+                  value={maskedValues.telefone}
+                  onChange={handlePhoneChange}
+                  maxLength="15"
+                  placeholder=" "
+                  required
+                />
+                {errors.telefone && (
+                  <span className="field-error">{errors.telefone}</span>
+                )}
               </div>
             </>
           )}
@@ -360,6 +384,7 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
               name="email"
               value={formData.email}
               onChange={handleChange}
+              placeholder=" "
               required
             />
             {errors.email && (
@@ -376,6 +401,7 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
                 name="senha"
                 value={formData.senha}
                 onChange={handleChange}
+                placeholder=" "
                 required
               />
               {errors.senha && (
@@ -392,6 +418,7 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
                   name="confirmarSenha"
                   value={formData.confirmarSenha}
                   onChange={handleChange}
+                  placeholder=" "
                   required
                 />
                 {errors.confirmarSenha && (
@@ -405,24 +432,22 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
             <div className="address-section">
               <h3>Endereço Principal</h3>
               
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="enderecos.0.cep">CEP</label>
-                  <input
-                    type="text"
-                    id="enderecos.0.cep"
-                    name="enderecos.0.cep"
-                    value={maskedValues.cep}
-                    onChange={(e) => handleCepChange(e, 0)}
-                    onBlur={() => handleCepBlur(0)}
-                    maxLength="9"
-                    placeholder="00000-000"
-                    required
-                  />
-                  {errors.cep && (
-                    <span className="field-error">{errors.cep}</span>
-                  )}
-                </div>
+              <div className="form-group">
+                <label htmlFor="enderecos.0.cep">CEP</label>
+                <input
+                  type="text"
+                  id="enderecos.0.cep"
+                  name="enderecos.0.cep"
+                  value={maskedValues.cep}
+                  onChange={(e) => handleCepChange(e, 0)}
+                  onBlur={() => handleCepBlur(0)}
+                  maxLength="9"
+                  placeholder=" "
+                  required
+                />
+                {errors.cep && (
+                  <span className="field-error">{errors.cep}</span>
+                )}
               </div>
 
               <div className="form-row">
@@ -434,6 +459,7 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
                     name="enderecos.0.logradouro"
                     value={formData.enderecos[0].logradouro}
                     onChange={handleChange}
+                    placeholder=" "
                     required
                   />
                   {errors.logradouro && (
@@ -449,6 +475,7 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
                     name="enderecos.0.numero"
                     value={formData.enderecos[0].numero}
                     onChange={handleChange}
+                    placeholder=" "
                     required
                   />
                   {errors.numero && (
@@ -465,6 +492,7 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
                   name="enderecos.0.complemento"
                   value={formData.enderecos[0].complemento}
                   onChange={handleChange}
+                  placeholder=" "
                 />
               </div>
 
@@ -477,6 +505,7 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
                     name="enderecos.0.bairro"
                     value={formData.enderecos[0].bairro}
                     onChange={handleChange}
+                    placeholder=" "
                     required
                   />
                   {errors.bairro && (
@@ -492,6 +521,7 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
                     name="enderecos.0.cidade"
                     value={formData.enderecos[0].cidade}
                     onChange={handleChange}
+                    placeholder=" "
                     required
                   />
                   {errors.cidade && (
@@ -508,6 +538,7 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
                     value={formData.enderecos[0].estado}
                     onChange={handleChange}
                     maxLength="2"
+                    placeholder=" "
                     required
                   />
                   {errors.estado && (
@@ -520,7 +551,7 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
           <button 
             type="submit" 
-            className="submit-btn"
+            className="form-submit-btn"
             disabled={isLoading}
           >
             {isLoading ? (

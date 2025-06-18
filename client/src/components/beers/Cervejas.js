@@ -13,19 +13,17 @@ const Cervejas = ({ cart, addToCart, updateCart, isAuthenticated }) => {
   const [showCart, setShowCart] = useState(false);
   const navigate = useNavigate();
 
-  // Função para obter imagem da cerveja por tipo
   const getBeerImage = useCallback((beerType) => {
     const images = {
-      'IPA': 'https://images.unsplash.com/photo-1566633806327-68e152aaf26d?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80',
-      'Stout': 'https://images.unsplash.com/photo-1566633806327-68e152aaf26d?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80',
-      'Weiss': 'https://images.unsplash.com/photo-1600788886242-5c96aabe3757?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80',
-      'Pilsen': 'https://images.unsplash.com/photo-1600788886242-5c96aabe3757?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80',
-      'Outro': 'https://via.placeholder.com/400x500.png?text=Garrafa+Virada'
+      'IPA': '/ipa-beer.png',
+      'Stout': '/stout-beer.png',
+      'Weiss': '/weiss-beer.png',
+      'Pilsen': '/pilsen-beer.png',
+      'Outro': '/default-beer.png'
     };
     return images[beerType] || images['Outro'];
   }, []);
 
-  // Função para buscar cervejas
   const fetchBeers = useCallback(async () => {
     try {
       setLoading(true);
@@ -33,12 +31,10 @@ const Cervejas = ({ cart, addToCart, updateCart, isAuthenticated }) => {
       
       const response = await axios.get(`${API_URL}/api/beers/public`);
       
-      // Verifica se a resposta tem a estrutura esperada
       if (!response.data || !response.data.success || !Array.isArray(response.data.data)) {
         throw new Error('Estrutura de dados inválida');
       }
 
-      // Formata os dados das cervejas
       const formattedBeers = response.data.data.map(beer => ({
         _id: beer._id,
         nome: `Virada ${beer.beerType}`,
@@ -54,7 +50,6 @@ const Cervejas = ({ cart, addToCart, updateCart, isAuthenticated }) => {
 
       setCervejas(formattedBeers);
 
-      // Atualiza o estoque usando _id como chave
       const newStock = {};
       response.data.data.forEach(beer => {
         newStock[beer._id] = beer.quantity;
@@ -73,7 +68,6 @@ const Cervejas = ({ cart, addToCart, updateCart, isAuthenticated }) => {
     fetchBeers();
   }, [fetchBeers]);
 
-  // Função para adicionar ao carrinho
   const handleAddToCart = (cerveja) => {
     if (!isAuthenticated) {
       navigate('/login', { state: { from: '/' } });
@@ -89,13 +83,11 @@ const Cervejas = ({ cart, addToCart, updateCart, isAuthenticated }) => {
     setShowCart(true);
   };
 
-  // Função para remover do carrinho
   const handleRemoveFromCart = (id) => {
     const updatedCart = cart.filter(item => item._id !== id);
     updateCart(updatedCart);
   };
 
-  // Função para atualizar quantidade no carrinho
   const handleUpdateQuantity = (id, newQuantity) => {
     if (newQuantity < 1) {
       handleRemoveFromCart(id);
@@ -108,28 +100,24 @@ const Cervejas = ({ cart, addToCart, updateCart, isAuthenticated }) => {
     updateCart(updatedCart);
   };
 
-  // Calcula total de itens no carrinho
   const getTotalItems = () => {
     return cart.reduce((total, item) => total + item.quantity, 0);
   };
 
-  // Calcula preço total
   const getTotalPrice = () => {
     return cart.reduce((total, item) => {
       return total + ((item.price || 0) * item.quantity);
     }, 0).toFixed(2);
   };
 
-  // Navega para checkout
   const proceedToCheckout = () => {
     navigate('/checkout');
   };
 
   return (
     <section id="cervejas-section" className="cervejas-section">
-      <h2 className="section-title">Nossas <span className="destaque">Cervejas</span> Históricas</h2>
+      <h2 className="section-title">Nossas <span className="destaque">C<span className="inverted-a">A</span>BERV</span> Históricas</h2>
 
-      {/* Mensagem de erro */}
       {error && (
         <div className="error-message">
           <p>{error}</p>
@@ -145,7 +133,6 @@ const Cervejas = ({ cart, addToCart, updateCart, isAuthenticated }) => {
         </div>
       )}
 
-      {/* Grid de cervejas */}
       <div className="cervejas-grid">
         {loading && (
           <div className="loading-overlay">
@@ -164,7 +151,7 @@ const Cervejas = ({ cart, addToCart, updateCart, isAuthenticated }) => {
                 loading="lazy"
                 onError={(e) => {
                   e.target.onerror = null;
-                  e.target.src = "https://via.placeholder.com/400x500.png?text=Garrafa+Virada";
+                  e.target.src = "/default-beer.png";
                 }}
               />
               <div className="cerveja-detalhes">
@@ -197,13 +184,11 @@ const Cervejas = ({ cart, addToCart, updateCart, isAuthenticated }) => {
         ))}
       </div>
 
-      {/* Ícone do carrinho */}
       <div className={`cart-icon ${getTotalItems() > 0 ? 'has-items' : ''}`} onClick={() => setShowCart(!showCart)}>
         <i className="fas fa-shopping-cart"></i>
         {getTotalItems() > 0 && <span className="cart-count">{getTotalItems()}</span>}
       </div>
 
-      {/* Sidebar do carrinho */}
       <div className={`cart-sidebar ${showCart ? 'open' : ''}`}>
         <div className="cart-header">
           <h3>Seu Carrinho</h3>

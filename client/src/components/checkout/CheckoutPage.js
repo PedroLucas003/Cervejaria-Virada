@@ -20,6 +20,7 @@ const CheckoutPage = ({ cartItems, user, onOrderSuccess }) => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const [usingPrincipalAddress, setUsingPrincipalAddress] = useState(true);
+  const [paymentMethod, setPaymentMethod] = useState('mercadoPago'); // 'mercadoPago' ou 'direct'
 
   useEffect(() => {
     const principalAddress = user?.enderecos?.find(addr => addr.principal) || user?.enderecos?.[0];
@@ -78,16 +79,31 @@ const CheckoutPage = ({ cartItems, user, onOrderSuccess }) => {
         total: cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0) + 15
       };
 
-      // Enviar para o backend
-      const response = await axios.post(`${API_URL}/api/orders`, orderData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      if (paymentMethod === 'mercadoPago') {
+        // Envia os dados para o backend criar a preferência de pagamento no Mercado Pago
+        const response = await axios.post(`${API_URL}/api/payments/create-preference`, orderData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
 
-      // Redirecionar para página de sucesso com o ID do pedido
-      navigate(`/order/${response.data._id}/success`);
+        // Redireciona o usuário para a URL de pagamento do Mercado Pago
+        if (response.data.init_point) {
+          window.location.href = response.data.init_point;
+        }
+      } else {
+        // Modo de pagamento direto (sem Mercado Pago)
+        const response = await axios.post(`${API_URL}/api/orders`, orderData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        // Redirecionar para página de sucesso com o ID do pedido
+        navigate(`/order/${response.data._id}/success`);
+      }
 
     } catch (error) {
       console.error('Erro no checkout:', error);
@@ -151,6 +167,7 @@ const CheckoutPage = ({ cartItems, user, onOrderSuccess }) => {
   };
 
   const principalAddress = user?.enderecos?.find(addr => addr.principal) || user?.enderecos?.[0];
+  const totalAmount = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0) + 15;
 
   return (
     <div className="checkout-container">
@@ -178,7 +195,7 @@ const CheckoutPage = ({ cartItems, user, onOrderSuccess }) => {
                 <p>Frete: R$ 15,00</p>
               </div>
               <div className="cart-total">
-                <p>Total: R$ {(cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0) + 15).toFixed(2)}</p>
+                <p>Total: R$ {totalAmount.toFixed(2)}</p>
               </div>
             </div>
           ) : (
@@ -323,14 +340,51 @@ const CheckoutPage = ({ cartItems, user, onOrderSuccess }) => {
             </form>
           </div>
 
-          <div className="payment-instructions">
-            <h3>Instruções Importantes:</h3>
-            <ul>
-              <li>Após clicar em "Finalizar Compra", seu pedido será registrado</li>
-              <li>Você receberá um e-mail com os detalhes do pedido</li>
-              <li>O pagamento será acertado diretamente com a loja</li>
-            </ul>
+          <div className="payment-method-selection">
+            <h2>Método de Pagamento</h2>
+            <div className="payment-options">
+              <label>
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="mercadoPago"
+                  checked={paymentMethod === 'mercadoPago'}
+                  onChange={() => setPaymentMethod('mercadoPago')}
+                />
+                Pagar com Mercado Pago
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="direct"
+                  checked={paymentMethod === 'direct'}
+                  onChange={() => setPaymentMethod('direct')}
+                />
+                Pagar diretamente com a loja
+              </label>
+            </div>
           </div>
+
+          {paymentMethod === 'mercadoPago' ? (
+            <div className="payment-instructions">
+              <h3>Instruções do Mercado Pago:</h3>
+              <ul>
+                <li>Você será redirecionado para o site do Mercado Pago</li>
+                <li>Pague com cartão, boleto ou saldo Mercado Pago</li>
+                <li>Após a confirmação, seu pedido será processado</li>
+              </ul>
+            </div>
+          ) : (
+            <div className="payment-instructions">
+              <h3>Instruções Importantes:</h3>
+              <ul>
+                <li>Após clicar em "Finalizar Compra", seu pedido será registrado</li>
+                <li>Você receberá um e-mail com os detalhes do pedido</li>
+                <li>O pagamento será acertado diretamente com a loja</li>
+              </ul>
+            </div>
+          )}
 
           <div className="order-total-section">
             <button
@@ -339,7 +393,8 @@ const CheckoutPage = ({ cartItems, user, onOrderSuccess }) => {
                 !deliveryData.number || cartItems.length === 0}
               className="checkout-btn"
             >
-              {isLoading ? 'Processando...' : 'Finalizar Compra'}
+              {isLoading ? 'Processando...' : 
+               paymentMethod === 'mercadoPago' ? 'Ir para o Pagamento' : 'Finalizar Compra'}
             </button>
           </div>
         </div>
