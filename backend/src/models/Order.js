@@ -70,11 +70,11 @@ const orderSchema = new mongoose.Schema({
 
   // Informações de pagamento
   paymentInfo: {
-    paymentId: { // ID do pagamento no Mercado Pago
+    paymentId: { 
       type: String,
       required: true
     },
-    preferenceId: { // ID da preferência de pagamento
+    preferenceId: { 
       type: String
     },
     paymentMethod: {
@@ -86,28 +86,31 @@ const orderSchema = new mongoose.Schema({
       enum: ['pending', 'approved', 'authorized', 'in_process', 'rejected', 'cancelled', 'refunded', 'charged_back'],
       default: 'pending'
     },
-    paymentDetails: { // Detalhes completos da resposta do MP
+    pixCode: String, 
+    qrCodeBase64: String, 
+    expirationDate: Date, 
+    paymentDetails: { 
       type: Object
     },
-    mercadoPagoFee: { // Taxa do Mercado Pago
+    mercadoPagoFee: { 
       type: Number
     },
-    netReceivedAmount: { // Valor líquido recebido
+    netReceivedAmount: { 
       type: Number
     }
   },
 
   // Valores financeiros
- subtotal: {
-  type: Number // Removido 'required: true'
-},
-shippingCost: {
-  type: Number,
-  default: 15.00
-},
-total: {
-  type: Number // Removido 'required: true'
-},
+  subtotal: {
+    type: Number 
+  },
+  shippingCost: {
+    type: Number,
+    default: 0.01 // <--- ALTERADO AQUI: Frete de 1 centavo
+  },
+  total: {
+    type: Number 
+  },
 
   // Status e tracking
   status: {
@@ -130,9 +133,9 @@ total: {
   // Observações e metadados
   notes: String,
   internalNotes: String,
-  metadata: Object // Para informações adicionais flexíveis
+  metadata: Object 
 }, {
-  timestamps: true, // Cria automaticamente createdAt e updatedAt
+  timestamps: true, 
   toJSON: { virtuals: true },
   toObject: { virtuals: true }
 });
@@ -144,7 +147,7 @@ orderSchema.methods.updatePaymentStatus = async function(status, paymentDetails 
   
   if (status === 'approved') {
     this.paidAt = new Date();
-    this.status = 'processing'; // Muda status do pedido quando pagamento é aprovado
+    this.status = 'processing'; 
   }
   
   return this.save();

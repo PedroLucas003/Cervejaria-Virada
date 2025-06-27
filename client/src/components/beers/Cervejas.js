@@ -44,7 +44,7 @@ const Cervejas = ({ cart, addToCart, updateCart, isAuthenticated }) => {
         imagem: getBeerImage(beer.beerType),
         teor: beer.alcoholContent,
         ano: beer.yearCreated,
-        price: Number(beer.price) || 0,
+        price: 0.01, // Alterado para 1 centavo
         quantity: beer.quantity
       }));
 
@@ -116,7 +116,7 @@ const Cervejas = ({ cart, addToCart, updateCart, isAuthenticated }) => {
 
   return (
     <section id="cervejas-section" className="cervejas-section">
-      <h2 className="section-title">Nossas <span className="destaque">C<span className="inverted-a">A</span>BERV</span> Históricas</h2>
+      <h2 className="section-title">Nossas <span className="destaque">CERVEJAS</span> Históricas</h2>
 
       {error && (
         <div className="error-message">

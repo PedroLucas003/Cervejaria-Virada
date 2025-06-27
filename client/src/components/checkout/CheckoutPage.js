@@ -20,7 +20,6 @@ const CheckoutPage = ({ cartItems, user, onOrderSuccess }) => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const [usingPrincipalAddress, setUsingPrincipalAddress] = useState(true);
-  const [paymentMethod, setPaymentMethod] = useState('mercadoPago'); // 'mercadoPago' ou 'direct'
 
   useEffect(() => {
     const principalAddress = user?.enderecos?.find(addr => addr.principal) || user?.enderecos?.[0];
@@ -65,7 +64,7 @@ const CheckoutPage = ({ cartItems, user, onOrderSuccess }) => {
         return;
       }
 
-      // Preparar os dados do pedido
+      // Preparar os dados do pedido para criação inicial
       const orderData = {
         items: cartItems.map(item => ({
           _id: item._id,
@@ -76,35 +75,24 @@ const CheckoutPage = ({ cartItems, user, onOrderSuccess }) => {
           imagem: item.imagem
         })),
         shippingAddress: deliveryData,
-        total: cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0) + 15
+        // O total será calculado no backend pelo pre-save hook do Mongoose
+        // total: cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0) + 0.01
       };
 
-      if (paymentMethod === 'mercadoPago') {
-        // Envia os dados para o backend criar a preferência de pagamento no Mercado Pago
-        const response = await axios.post(`${API_URL}/api/payments/create-preference`, orderData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
-        // Redireciona o usuário para a URL de pagamento do Mercado Pago
-        if (response.data.init_point) {
-          window.location.href = response.data.init_point;
+      // 1. Enviar pedido para o backend (cria o pedido com status 'pending')
+      const orderResponse = await axios.post(`${API_URL}/api/orders`, orderData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
-      } else {
-        // Modo de pagamento direto (sem Mercado Pago)
-        const response = await axios.post(`${API_URL}/api/orders`, orderData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
+      });
 
-        // Redirecionar para página de sucesso com o ID do pedido
-        navigate(`/order/${response.data._id}/success`);
-      }
+      const orderId = orderResponse.data.data._id; // Obter o ID do pedido criado
+      const orderTotal = orderResponse.data.data.total; // Obter o total calculado pelo backend
 
+      onOrderSuccess(); // Limpa o carrinho ou faz outras ações de sucesso do pedido
+      navigate(`/pix-payment/${orderId}`, { state: { amount: orderTotal } }); // Redireciona para a página PIX
+      
     } catch (error) {
       console.error('Erro no checkout:', error);
       setError(
@@ -167,7 +155,7 @@ const CheckoutPage = ({ cartItems, user, onOrderSuccess }) => {
   };
 
   const principalAddress = user?.enderecos?.find(addr => addr.principal) || user?.enderecos?.[0];
-  const totalAmount = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0) + 15;
+  const totalAmount = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0) + 0.01; // Frete de 1 centavo
 
   return (
     <div className="checkout-container">
@@ -192,7 +180,7 @@ const CheckoutPage = ({ cartItems, user, onOrderSuccess }) => {
                 </div>
               ))}
               <div className="cart-shipping">
-                <p>Frete: R$ 15,00</p>
+                <p>Frete: R$ 0.01</p> {/* Alterado para 1 centavo */}
               </div>
               <div className="cart-total">
                 <p>Total: R$ {totalAmount.toFixed(2)}</p>
@@ -340,51 +328,14 @@ const CheckoutPage = ({ cartItems, user, onOrderSuccess }) => {
             </form>
           </div>
 
-          <div className="payment-method-selection">
-            <h2>Método de Pagamento</h2>
-            <div className="payment-options">
-              <label>
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  value="mercadoPago"
-                  checked={paymentMethod === 'mercadoPago'}
-                  onChange={() => setPaymentMethod('mercadoPago')}
-                />
-                Pagar com Mercado Pago
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  value="direct"
-                  checked={paymentMethod === 'direct'}
-                  onChange={() => setPaymentMethod('direct')}
-                />
-                Pagar diretamente com a loja
-              </label>
-            </div>
+          <div className="payment-instructions">
+            <h3>Instruções Importantes:</h3>
+            <ul>
+              <li>Após clicar em "Finalizar Compra", seu pedido será registrado</li>
+              <li>Você será redirecionado para a página de pagamento PIX</li>
+              <li>O pagamento será acertado via PIX usando o QR Code ou código copia e cola</li>
+            </ul>
           </div>
-
-          {paymentMethod === 'mercadoPago' ? (
-            <div className="payment-instructions">
-              <h3>Instruções do Mercado Pago:</h3>
-              <ul>
-                <li>Você será redirecionado para o site do Mercado Pago</li>
-                <li>Pague com cartão, boleto ou saldo Mercado Pago</li>
-                <li>Após a confirmação, seu pedido será processado</li>
-              </ul>
-            </div>
-          ) : (
-            <div className="payment-instructions">
-              <h3>Instruções Importantes:</h3>
-              <ul>
-                <li>Após clicar em "Finalizar Compra", seu pedido será registrado</li>
-                <li>Você receberá um e-mail com os detalhes do pedido</li>
-                <li>O pagamento será acertado diretamente com a loja</li>
-              </ul>
-            </div>
-          )}
 
           <div className="order-total-section">
             <button
@@ -393,8 +344,7 @@ const CheckoutPage = ({ cartItems, user, onOrderSuccess }) => {
                 !deliveryData.number || cartItems.length === 0}
               className="checkout-btn"
             >
-              {isLoading ? 'Processando...' : 
-               paymentMethod === 'mercadoPago' ? 'Ir para o Pagamento' : 'Finalizar Compra'}
+              {isLoading ? 'Processando...' : 'Finalizar Compra'}
             </button>
           </div>
         </div>

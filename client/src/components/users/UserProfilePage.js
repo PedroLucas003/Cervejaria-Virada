@@ -11,14 +11,14 @@ const UserProfilePage = ({ user, onUpdateUser }) => {
     telefone: '',
     enderecos: []
   });
-const [editing, setEditing] = useState(false);
+  const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
-  const [successMessage, setSuccessMessage] = useState(''); // <-- ADICIONADO
+  const [successMessage, setSuccessMessage] = useState('');
   const [activeTab, setActiveTab] = useState('info');
 
- const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
- 
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+
   useEffect(() => {
     if (user) {
       setFormData({
@@ -47,14 +47,11 @@ const [editing, setEditing] = useState(false);
     }));
   };
 
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setErrors({});
     setSuccessMessage('');
-
-    // // Defina a URL base da sua API aqui
-    // const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
     try {
       const token = localStorage.getItem('token');
@@ -77,7 +74,7 @@ const handleSubmit = async (e) => {
       };
 
       const response = await axios.put(
-        `${API_URL}/api/auth/${user._id}`, // URL corrigida e completa
+        `${API_URL}/api/auth/${user._id}`,
         payload,
         {
           headers: { 
@@ -90,7 +87,6 @@ const handleSubmit = async (e) => {
       onUpdateUser(response.data.user);
       setSuccessMessage('Perfil atualizado com sucesso!');
       
-      // Volta para o modo de visualização após 2 segundos
       setTimeout(() => {
         setEditing(false);
         setSuccessMessage('');
@@ -144,36 +140,30 @@ const handleSubmit = async (e) => {
 
   if (!user) {
     return (
-      <div className="profile-container">
-        <div className="profile-content">
-          <div className="profile-loading">
-            <div className="spinner"></div>
-            <p>Carregando dados do usuário...</p>
-          </div>
-        </div>
+      <div className="profile-loading">
+        <div className="loading-spinner"></div>
+        <p>Carregando dados do usuário...</p>
       </div>
     );
   }
 
   return (
     <div className="profile-container">
-      <div className="profile-content">
+      <div className="profile-form-container">
         <div className="profile-header">
           <h2>Meu Perfil</h2>
-          <div className="profile-avatar">
-            <i className="fas fa-user-circle"></i>
-          </div>
+          <p className="profile-subtitle">Gerencie suas informações pessoais e endereços</p>
         </div>
 
         <div className="profile-tabs">
           <button
-            className={`tab-btn ${activeTab === 'info' ? 'active' : ''}`}
+            className={`profile-tab ${activeTab === 'info' ? 'active' : ''}`}
             onClick={() => setActiveTab('info')}
           >
             Informações
           </button>
           <button
-            className={`tab-btn ${activeTab === 'address' ? 'active' : ''}`}
+            className={`profile-tab ${activeTab === 'address' ? 'active' : ''}`}
             onClick={() => setActiveTab('address')}
           >
             Endereços
@@ -186,7 +176,6 @@ const handleSubmit = async (e) => {
           </div>
         )}
         {successMessage && <div className="success-message">{successMessage}</div>}
-        {errors.submit && <div className="error-message">{errors.submit}</div>}
 
         <form onSubmit={handleSubmit} className="profile-form">
           {activeTab === 'info' && (
@@ -203,9 +192,11 @@ const handleSubmit = async (e) => {
                       value={formData.nomeCompleto}
                       onChange={handleChange}
                       required
+                      className="form-input"
+                      placeholder="Digite seu nome completo"
                     />
                   ) : (
-                    <p className="profile-info">{formData.nomeCompleto}</p>
+                    <div className="profile-info">{formData.nomeCompleto}</div>
                   )}
                 </div>
 
@@ -218,17 +209,19 @@ const handleSubmit = async (e) => {
                       value={formData.email}
                       onChange={handleChange}
                       required
+                      className="form-input"
+                      placeholder="Digite seu email"
                     />
                   ) : (
-                    <p className="profile-info">{formData.email}</p>
+                    <div className="profile-info">{formData.email}</div>
                   )}
                 </div>
 
                 <div className="form-group">
                   <label>CPF</label>
-                  <p className="profile-info">
+                  <div className="profile-info">
                     {formData.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')}
-                  </p>
+                  </div>
                 </div>
 
                 <div className="form-group">
@@ -240,11 +233,12 @@ const handleSubmit = async (e) => {
                       value={formData.dataNascimento}
                       onChange={handleChange}
                       required
+                      className="form-input"
                     />
                   ) : (
-                    <p className="profile-info">
+                    <div className="profile-info">
                       {new Date(formData.dataNascimento).toLocaleDateString('pt-BR')}
-                    </p>
+                    </div>
                   )}
                 </div>
 
@@ -257,11 +251,13 @@ const handleSubmit = async (e) => {
                       value={formData.telefone}
                       onChange={handleChange}
                       required
+                      className="form-input"
+                      placeholder="Digite seu telefone"
                     />
                   ) : (
-                    <p className="profile-info">
+                    <div className="profile-info">
                       {formData.telefone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')}
-                    </p>
+                    </div>
                   )}
                 </div>
               </div>
@@ -311,9 +307,11 @@ const handleSubmit = async (e) => {
                           value={endereco.cep}
                           onChange={(e) => handleAddressChange(e, index)}
                           required
+                          className="form-input"
+                          placeholder="Digite o CEP"
                         />
                       ) : (
-                        <p className="address-info">{endereco.cep.replace(/(\d{5})(\d{3})/, '$1-$2')}</p>
+                        <div className="address-info">{endereco.cep.replace(/(\d{5})(\d{3})/, '$1-$2')}</div>
                       )}
                     </div>
 
@@ -326,9 +324,11 @@ const handleSubmit = async (e) => {
                           value={endereco.logradouro}
                           onChange={(e) => handleAddressChange(e, index)}
                           required
+                          className="form-input"
+                          placeholder="Digite o logradouro"
                         />
                       ) : (
-                        <p className="address-info">{endereco.logradouro}</p>
+                        <div className="address-info">{endereco.logradouro}</div>
                       )}
                     </div>
 
@@ -341,9 +341,11 @@ const handleSubmit = async (e) => {
                           value={endereco.numero}
                           onChange={(e) => handleAddressChange(e, index)}
                           required
+                          className="form-input"
+                          placeholder="Digite o número"
                         />
                       ) : (
-                        <p className="address-info">{endereco.numero}</p>
+                        <div className="address-info">{endereco.numero}</div>
                       )}
                     </div>
 
@@ -355,9 +357,11 @@ const handleSubmit = async (e) => {
                           name="complemento"
                           value={endereco.complemento || ''}
                           onChange={(e) => handleAddressChange(e, index)}
+                          className="form-input"
+                          placeholder="Digite o complemento"
                         />
                       ) : (
-                        <p className="address-info">{endereco.complemento || '-'}</p>
+                        <div className="address-info">{endereco.complemento || '-'}</div>
                       )}
                     </div>
 
@@ -370,9 +374,11 @@ const handleSubmit = async (e) => {
                           value={endereco.bairro}
                           onChange={(e) => handleAddressChange(e, index)}
                           required
+                          className="form-input"
+                          placeholder="Digite o bairro"
                         />
                       ) : (
-                        <p className="address-info">{endereco.bairro}</p>
+                        <div className="address-info">{endereco.bairro}</div>
                       )}
                     </div>
 
@@ -385,9 +391,11 @@ const handleSubmit = async (e) => {
                           value={endereco.cidade}
                           onChange={(e) => handleAddressChange(e, index)}
                           required
+                          className="form-input"
+                          placeholder="Digite a cidade"
                         />
                       ) : (
-                        <p className="address-info">{endereco.cidade}</p>
+                        <div className="address-info">{endereco.cidade}</div>
                       )}
                     </div>
 
@@ -401,9 +409,11 @@ const handleSubmit = async (e) => {
                           onChange={(e) => handleAddressChange(e, index)}
                           maxLength="2"
                           required
+                          className="form-input"
+                          placeholder="Digite o estado (UF)"
                         />
                       ) : (
-                        <p className="address-info">{endereco.estado}</p>
+                        <div className="address-info">{endereco.estado}</div>
                       )}
                     </div>
                   </div>
@@ -423,42 +433,42 @@ const handleSubmit = async (e) => {
           )}
 
           <div className="profile-actions">
-  {editing ? (
-    <>
-      <button
-        type="button"  // Note que agora é type="button"
-        onClick={handleSubmit}
-        className="btn-save"
-        disabled={loading}
-      >
-        {loading ? (
-          <>
-            <i className="fas fa-spinner fa-spin"></i> Salvando...
-          </>
-        ) : (
-          <>
-            <i className="fas fa-save"></i> Salvar Alterações
-          </>
-        )}
-      </button>
-      <button
-        type="button"
-        onClick={() => setEditing(false)}
-        className="btn-cancel"
-      >
-        <i className="fas fa-times"></i> Cancelar
-      </button>
-    </>
-  ) : (
-    <button
-      type="button"
-      onClick={() => setEditing(true)}
-      className="btn-edit"
-    >
-      <i className="fas fa-edit"></i> Editar Perfil
-    </button>
-  )}
-</div>
+            {editing ? (
+              <>
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  className="form-submit-btn"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <>
+                      <span className="loading-spinner"></span> Salvando...
+                    </>
+                  ) : (
+                    <>
+                      <i className="fas fa-save"></i> Salvar Alterações
+                    </>
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEditing(false)}
+                  className="form-cancel-btn"
+                >
+                  <i className="fas fa-times"></i> Cancelar
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setEditing(true)}
+                className="form-submit-btn"
+              >
+                <i className="fas fa-edit"></i> Editar Perfil
+              </button>
+            )}
+          </div>
         </form>
       </div>
     </div>

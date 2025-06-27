@@ -1,286 +1,313 @@
-/* UserProfilePage.css - substitua pelo seguinte código */
+/* Estilos baseados no Uiverse.io com tema dark */
 .profile-container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   padding: 2rem;
-  background: #f5f7fa;
+  background-color: #121212;
 }
 
-.profile-content {
+.profile-form-container {
   width: 100%;
-  max-width: 1200px;
-  background: #fff;
-  border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+  max-width: 800px;
+  background: linear-gradient(#212121, #212121) padding-box,
+              linear-gradient(145deg, transparent 35%,#e81cff, #40c9ff) border-box;
+  border: 2px solid transparent;
+  padding: 32px 24px;
+  font-size: 14px;
+  font-family: inherit;
+  color: white;
   display: flex;
   flex-direction: column;
+  gap: 20px;
+  box-sizing: border-box;
+  border-radius: 16px;
 }
 
 .profile-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 2rem;
-  background: linear-gradient(135deg, #3498db, #2c3e50);
-  color: white;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 .profile-header h2 {
   margin: 0;
-  font-size: 2rem;
+  color: #fff;
+  font-size: 1.8rem;
 }
 
-.profile-avatar {
-  font-size: 3.5rem;
-  color: white;
+.profile-subtitle {
+  color: #b0b0b0;
+  margin: 8px 0 0 0;
+  font-size: 1rem;
 }
 
 .profile-tabs {
   display: flex;
-  background: #ecf0f1;
+  border-bottom: 1px solid #414141;
+  margin-bottom: 20px;
 }
 
-.tab-btn {
+.profile-tab {
   flex: 1;
-  padding: 1rem;
+  padding: 12px 16px;
   background: none;
   border: none;
-  font-size: 1rem;
+  color: #b0b0b0;
+  font-weight: 600;
   cursor: pointer;
-  color: #7f8c8d;
+  position: relative;
   transition: all 0.3s;
-  text-align: center;
-  border-bottom: 3px solid transparent;
 }
 
-.tab-btn.active {
-  color: #2c3e50;
-  background: white;
-  border-bottom-color: #3498db;
-  font-weight: 600;
+.profile-tab.active {
+  color: #fff;
+}
+
+.profile-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, #e81cff, #40c9ff);
 }
 
 .profile-form {
-  padding: 2rem;
   display: flex;
   flex-direction: column;
+  gap: 20px;
 }
 
 .profile-section {
-  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .profile-section h3 {
-  color: #2c3e50;
-  margin-bottom: 1.5rem;
-  font-size: 1.5rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid #eee;
+  margin: 0;
+  color: #fff;
+  font-size: 1.2rem;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #414141;
 }
 
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1.5rem;
+  gap: 15px;
 }
 
 .form-group {
-  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: #7f8c8d;
-  font-weight: 500;
-  font-size: 0.9rem;
+  color: #b0b0b0;
+  font-weight: 600;
+  font-size: 12px;
 }
 
-.form-group input {
+.form-input {
   width: 100%;
-  padding: 0.75rem 1rem;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 1rem;
-  transition: all 0.3s;
+  padding: 12px 16px;
+  border-radius: 8px;
+  color: #fff;
+  font-family: inherit;
+  background-color: transparent;
+  border: 1px solid #414141;
 }
 
-.form-group input:focus {
-  border-color: #3498db;
+.form-input:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+  border-color: #e81cff;
 }
 
-.profile-info {
-  padding: 0.75rem 1rem;
-  background: #f8f9fa;
-  border-radius: 6px;
-  margin: 0;
-  min-height: 42px;
+.profile-info, .address-info {
+  padding: 12px 16px;
+  border-radius: 8px;
+  background-color: #313131;
+  border: 1px solid #414141;
+  color: #fff;
 }
 
 .address-card {
-  background: #f8f9fa;
-  padding: 1.5rem;
-  border-radius: 10px;
-  margin-bottom: 1.5rem;
-  border-left: 4px solid #ddd;
+  padding: 16px;
+  border-radius: 8px;
+  background-color: #313131;
+  border: 1px solid #414141;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
 .address-card.principal {
-  border-left-color: #3498db;
-  background: #e8f4fc;
+  border-left: 3px solid #e81cff;
+  background: linear-gradient(to right, #313131, #2a1a2e);
 }
 
 .address-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .address-header h4 {
   margin: 0;
-  color: #2c3e50;
-  font-size: 1.2rem;
+  color: #fff;
+  font-size: 1rem;
 }
 
 .principal-badge {
-  background: #3498db;
+  background: #e81cff;
   color: white;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
+  padding: 4px 8px;
+  border-radius: 4px;
   font-size: 0.8rem;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .address-actions {
   display: flex;
-  gap: 0.75rem;
+  gap: 8px;
 }
 
 .action-btn {
-  padding: 0.5rem 1rem;
-  background: #ecf0f1;
+  padding: 6px 12px;
+  background: #414141;
   border: none;
   border-radius: 4px;
+  color: #fff;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   transition: all 0.3s;
 }
 
 .action-btn:hover {
-  background: #d5dbdb;
+  background: #515151;
+}
+
+.action-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .action-btn.remove {
-  background: #e74c3c;
-  color: white;
+  background: #f44336;
 }
 
 .action-btn.remove:hover {
-  background: #c0392b;
+  background: #d32f2f;
 }
 
 .address-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1.5rem;
-}
-
-.address-info {
-  padding: 0.75rem 1rem;
-  background: white;
-  border-radius: 6px;
-  margin: 0;
-  min-height: 42px;
+  gap: 15px;
 }
 
 .add-address-btn {
-  padding: 0.75rem;
-  background: #3498db;
+  padding: 12px 16px;
+  background: #414141;
   color: white;
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 1rem;
-  margin-top: 1rem;
-  transition: all 0.3s;
+  font-size: 0.9rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  width: auto;
-  align-self: flex-start;
+  gap: 8px;
+  transition: all 0.3s;
 }
 
 .add-address-btn:hover {
-  background: #2980b9;
+  background: #515151;
 }
 
 .profile-actions {
   display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid #eee;
+  gap: 15px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #414141;
 }
 
-.btn-edit, .btn-save, .btn-cancel {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 6px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s;
+.form-submit-btn {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
+  font-family: inherit;
+  color: #fff;
+  font-weight: 600;
+  width: 100%;
+  background: #313131;
+  border: 1px solid #414141;
+  padding: 12px 16px;
+  font-size: inherit;
+  gap: 8px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.3s;
 }
 
-.btn-edit {
-  background: #3498db;
-  color: white;
+.form-submit-btn:hover {
+  background-color: #e81cff;
+  border-color: #e81cff;
 }
 
-.btn-edit:hover {
-  background: #2980b9;
+.form-submit-btn:active {
+  transform: scale(0.98);
 }
 
-.btn-save {
-  background: #2ecc71;
-  color: white;
-}
-
-.btn-save:hover {
-  background: #27ae60;
-}
-
-.btn-save:disabled {
-  background: #95a5a6;
+.form-submit-btn:disabled {
+  background-color: #666;
   cursor: not-allowed;
 }
 
-.btn-cancel {
-  background: #e74c3c;
-  color: white;
+.form-cancel-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  color: #fff;
+  font-weight: 600;
+  width: 100%;
+  background: #f44336;
+  border: 1px solid #f44336;
+  padding: 12px 16px;
+  font-size: inherit;
+  gap: 8px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.3s;
 }
 
-.btn-cancel:hover {
-  background: #c0392b;
+.form-cancel-btn:hover {
+  background-color: #d32f2f;
+  border-color: #d32f2f;
 }
 
 .error-message {
-  background: #f8d7da;
-  color: #721c24;
-  padding: 1rem;
-  border-radius: 6px;
-  margin-bottom: 1.5rem;
-  text-align: center;
+  background: #3a1c1f;
+  color: #ff8a8a;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.success-message {
+  background: #1c3a1f;
+  color: #8aff8a;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
 }
 
 .profile-loading {
@@ -288,52 +315,66 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 300px;
+  min-height: 100vh;
+  background-color: #121212;
+  color: #fff;
+  gap: 15px;
 }
 
-.spinner {
-  border: 4px solid rgba(0, 0, 0, 0.1);
-  width: 40px;
-  height: 40px;
+.loading-spinner {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
-  border-left-color: #3498db;
+  border-top-color: #e81cff;
   animation: spin 1s linear infinite;
-  margin-bottom: 1rem;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-@media (max-width: 992px) {
-  .form-grid, .address-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .profile-content {
-    max-width: 95%;
-  }
+  to { transform: rotate(360deg); }
 }
 
 @media (max-width: 768px) {
   .profile-container {
     padding: 1rem;
+    align-items: flex-start;
+    padding-top: 3rem;
   }
   
-  .profile-header {
-    flex-direction: column;
-    text-align: center;
-    gap: 1rem;
-    padding: 1.5rem;
+  .profile-form-container {
+    padding: 24px 16px;
+  }
+  
+  .form-grid, .address-grid {
+    grid-template-columns: 1fr;
   }
   
   .profile-actions {
     flex-direction: column;
   }
+}
+
+@media (max-width: 480px) {
+  .profile-form-container {
+    padding: 20px 12px;
+  }
   
-  .btn-edit, .btn-save, .btn-cancel {
+  .profile-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .address-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .address-actions {
     width: 100%;
-    justify-content: center;
+    flex-direction: column;
+  }
+  
+  .action-btn {
+    width: 100%;
   }
 }

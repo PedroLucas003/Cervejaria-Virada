@@ -40,48 +40,52 @@ const UserOrdersPage = () => {
   if (error) return <div className="global-error">{error}</div>;
 
   return (
-    <div className="user-orders-container">
-      <h1>Meus Pedidos</h1>
-      {orders.length === 0 ? (
-        <p>Você ainda não fez nenhum pedido.</p>
-      ) : (
-        <div className="orders-list">
-          {orders.map((order) => (
-            <div key={order._id} className="order-card">
-              <div className="order-header">
-                <h3>Pedido #{order._id.substring(0, 7)}</h3>
-                <p><strong>Data:</strong> {new Date(order.createdAt).toLocaleDateString('pt-BR')}</p>
-                <p><strong>Status:</strong> <span className={`status status-${order.status}`}>{order.status || 'Processando'}</span></p>
-                <p><strong>Total:</strong> R$ {order.total.toFixed(2)}</p>
-              </div>
-              <div className="order-body">
-                <h4>Itens do Pedido:</h4>
-                {/* CORREÇÃO: Alterar todas as ocorrências de 'item.beer' para 'item.productId' */}
-                {order.items.map((item) => (
-                  item.productId ? ( // Verifica se o produto populado existe
-                    <div key={item._id || item.productId._id} className="order-item">
-                      <img 
-                        src={item.productId.imagem || 'https://placehold.co/50x50/e2e8f0/e2e8f0?text=Cerva'} 
-                        alt={item.productId.nome} 
-                        className="item-image"
-                      />
-                      <div className="item-details">
-                        <span>{item.productId.nome}</span>
-                        <span>Qtd: {item.quantity}</span>
-                        <span>Preço Unit.: R$ {item.price.toFixed(2)}</span>
+    <div className="user-orders-page">
+      <div className="user-orders-container">
+        <h1>Meus Pedidos</h1>
+        {orders.length === 0 ? (
+          <p className="no-orders">Você ainda não fez nenhum pedido.</p>
+        ) : (
+          <div className="orders-list">
+            {orders.map((order) => (
+              <div key={order._id} className="order-card">
+                <div className="order-header">
+                  <h3>Pedido #{order._id.substring(0, 7)}</h3>
+                  <p><strong>Data:</strong> {new Date(order.createdAt).toLocaleDateString('pt-BR')}</p>
+                  <p><strong>Status:</strong> <span className={`status status-${order.status}`}>{order.status || 'Processando'}</span></p>
+                  <p><strong>Total:</strong> R$ {order.total.toFixed(2)}</p>
+                </div>
+                <div className="order-body">
+                  <h4>Itens do Pedido:</h4>
+                  {order.items.map((item) => (
+                    item.productId ? (
+                      <div key={item._id || item.productId._id} className="order-item">
+                        <img 
+                          src={item.productId.imagem || 'https://placehold.co/50x50/e2e8f0/e2e8f0?text=Cerva'} 
+                          alt={item.productId.nome} 
+                          className="item-image"
+                          onError={(e) => {
+                            e.target.src = 'https://placehold.co/50x50/e2e8f0/e2e8f0?text=Cerva';
+                          }}
+                        />
+                        <div className="item-details">
+                          <span>{item.productId.nome}</span>
+                          <span>Qtd: {item.quantity}</span>
+                          <span>Preço Unit.: R$ {item.price.toFixed(2)}</span>
+                        </div>
                       </div>
-                    </div>
-                  ) : (
-                    <div key={item._id} className="order-item-deleted">
-                      <span>Produto não mais disponível</span>
-                    </div>
-                  )
-                ))}
+                    ) : (
+                      <div key={item._id} className="order-item-deleted">
+                        <span>Produto não mais disponível</span>
+                      </div>
+                    )
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

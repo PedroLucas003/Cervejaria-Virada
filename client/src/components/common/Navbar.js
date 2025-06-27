@@ -37,9 +37,6 @@ const Navbar = ({ isAuthenticated, onLogout, user, cartItems }) => {
           <button className="menu-toggle" onClick={toggleMobileMenu}>
             <i className={`fas ${mobileMenuOpen ? 'fa-times' : 'fa-bars'}`}></i>
           </button>
-          <Link to="/" className="home-link">
-            <span className="navbar-logo">Cervejaria Virada</span>
-          </Link>
         </div>
 
         <div className="navbar-right">
@@ -47,18 +44,18 @@ const Navbar = ({ isAuthenticated, onLogout, user, cartItems }) => {
             <>
               <div className="user-menu">
                 <button className="user-toggle" onClick={toggleMenu}>
-                  <span className="user-email">{user?.email}</span>
+                  <i className="fas fa-user-circle user-icon"></i>
                   <i className={`fas ${menuOpen ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
                 </button>
 
                 {menuOpen && (
                   <div className="dropdown-menu">
                     <Link to="/profile" onClick={() => setMenuOpen(false)}>
-                      <i className="fas fa-user"></i> Meu Perfil
+                      <i className="fas fa-user"></i> Perfil
                     </Link>
 
-                    <Link to="/my-orders" onClick={() => setMobileMenuOpen(false)} className="mobile-menu-item">
-                      <i className="fas fa-receipt"></i> Meus Pedidos
+                    <Link to="/my-orders" onClick={() => setMenuOpen(false)}>
+                      <i className="fas fa-receipt"></i> Pedidos
                     </Link>
 
                     {user?.isAdmin && (
@@ -67,10 +64,10 @@ const Navbar = ({ isAuthenticated, onLogout, user, cartItems }) => {
                           <i className="fas fa-tachometer-alt"></i> Dashboard
                         </Link>
                         <Link to="/admin/users" onClick={() => setMenuOpen(false)}>
-                          <i className="fas fa-users"></i> Gerenciar Usuários
+                          <i className="fas fa-users"></i> Usuários
                         </Link>
                         <Link to="/admin/orders" onClick={() => setMenuOpen(false)}>
-                          <i className="fas fa-list-alt"></i> Todos os Pedidos
+                          <i className="fas fa-list-alt"></i> Pedidos
                         </Link>
                       </>
                     )}
@@ -88,7 +85,8 @@ const Navbar = ({ isAuthenticated, onLogout, user, cartItems }) => {
             </>
           ) : (
             <Link to="/login" className="login-link">
-              <span className="button-text">Login</span>
+              <i className="fas fa-sign-in-alt"></i>
+              <span className="login-text">Entrar</span>
             </Link>
           )}
 
@@ -105,16 +103,16 @@ const Navbar = ({ isAuthenticated, onLogout, user, cartItems }) => {
       <div className={`mobile-menu ${mobileMenuOpen ? 'open' : ''}`}>
         <div className="mobile-menu-content">
           <Link to="/" onClick={() => setMobileMenuOpen(false)} className="mobile-menu-item">
-            <i className="fas fa-home"></i> Home
+            <i className="fas fa-home"></i> Início
           </Link>
 
           {isAuthenticated ? (
             <>
               <Link to="/profile" onClick={() => setMobileMenuOpen(false)} className="mobile-menu-item">
-                <i className="fas fa-user"></i> Meu Perfil
+                <i className="fas fa-user"></i> Perfil
               </Link>
 
-              <Link to="/my-orders" onClick={() => setMenuOpen(false)}>
+              <Link to="/my-orders" onClick={() => setMobileMenuOpen(false)} className="mobile-menu-item">
                 <i className="fas fa-receipt"></i> Meus Pedidos
               </Link>
 
@@ -124,10 +122,10 @@ const Navbar = ({ isAuthenticated, onLogout, user, cartItems }) => {
                     <i className="fas fa-tachometer-alt"></i> Dashboard
                   </Link>
                   <Link to="/admin/users" onClick={() => setMobileMenuOpen(false)} className="mobile-menu-item">
-                    <i className="fas fa-users"></i> Gerenciar Usuários
+                    <i className="fas fa-users"></i> Usuários
                   </Link>
                   <Link to="/admin/orders" onClick={() => setMobileMenuOpen(false)} className="mobile-menu-item">
-                    <i className="fas fa-list-alt"></i> Todos os Pedidos
+                    <i className="fas fa-list-alt"></i> Todos Pedidos
                   </Link>
                 </>
               )}
@@ -142,7 +140,7 @@ const Navbar = ({ isAuthenticated, onLogout, user, cartItems }) => {
             </>
           ) : (
             <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="mobile-menu-item">
-              <i className="fas fa-sign-in-alt"></i> Login
+              <i className="fas fa-sign-in-alt"></i> Entrar
             </Link>
           )}
         </div>

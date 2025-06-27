@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useParams, useLocation } from 'react-router-dom';
 import './App.css';
 import BeerDashboard from './components/beers/BeerDashboard';
 import Navbar from './components/common/Navbar';
@@ -8,17 +8,50 @@ import Cervejas from './components/beers/Cervejas';
 import LoginPage from './components/home/LoginPage';
 import UserDashboard from './components/users/UserDashboard';
 import CheckoutPage from './components/checkout/CheckoutPage';
-import OrderSuccessPage from './components/checkout/OrderSuccessPage';
 import EditUserPage from './components/users/EditUserPage';
 import UserProfilePage from './components/users/UserProfilePage';
-import SuccessPage from './components/checkout/SuccessPage';
-import ErrorPage from './components/checkout/ErrorPage';
-import PendingPage from './components/checkout/PendingPage';
 import UserOrdersPage from './components/users/UserOrdersPage';
 import AdminOrdersPage from './components/users/AdminOrdersPage';
+import PixPayment from './components/checkout/PixPayment'; // <--- CAMINHO CORRIGIDO AQUI
 import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+
+// Componente Wrapper para PixPayment para extrair os parâmetros da URL e o state
+const PixPaymentWrapper = ({ onOrderSuccess }) => {
+  const { orderId } = useParams(); // Pega o orderId da URL
+  const location = useLocation();    // Pega o objeto location para acessar o state
+  const navigate = useNavigate();    // Para navegar após o sucesso do pagamento
+
+  // O 'amount' é passado via 'state' na navegação do CheckoutPage
+  const amount = location.state?.amount; 
+
+  // Basicamente, se não tivermos o orderId ou o amount, algo deu errado
+  if (!orderId || amount === undefined) {
+    console.error("Dados de pagamento PIX insuficientes para renderizar PixPayment.");
+    // Redirecione para uma página de erro ou para a página inicial, ou mostre uma mensagem
+    return (
+      <div className="error-container">
+        <h2>Erro: Dados de Pagamento Ausentes</h2>
+        <p>Não foi possível carregar os detalhes do pagamento PIX. Por favor, tente novamente.</p>
+        <button onClick={() => navigate('/')}>Voltar para a Página Inicial</button>
+      </div>
+    );
+  }
+
+  return (
+    <PixPayment 
+      orderId={orderId} 
+      amount={amount} 
+      onBack={() => navigate('/checkout')} // Volta para a página de checkout
+      onSuccess={() => { 
+        onOrderSuccess(); // Limpa o carrinho, etc.
+        navigate('/payment-success'); // Redireciona para uma página de sucesso final
+      }} 
+    />
+  );
+};
+
 
 function AppWrapper() {
   return (
@@ -113,6 +146,14 @@ function App() {
       return [...prevCart, { ...item, quantity: 1 }];
     });
   };
+
+  // Função para limpar o carrinho após o pedido ser criado/pago
+  const handleOrderSuccess = () => {
+    setCart([]); // Limpa o carrinho
+    localStorage.removeItem('cart'); // Remove do localStorage
+    console.log('Carrinho limpo após sucesso do pedido.');
+  };
+
 
   if (authState.loading) {
     return (
@@ -214,25 +255,37 @@ function App() {
             authState.isAuthenticated ? (
               <CheckoutPage
                 cartItems={cart}
-                // Adicione esta linha para passar os dados do usuário
                 user={authState.user}
-                onOrderSuccess={() => {
-                  setCart([]);
-                  localStorage.removeItem('cart');
-                }}
+                onOrderSuccess={handleOrderSuccess}
               />
             ) : (
               <Navigate to="/login" state={{ from: '/checkout' }} />
             )
           } />
 
-          <Route path="/order-success" element={<OrderSuccessPage />} />
+          {/* ROTA PARA A PÁGINA DE PAGAMENTO PIX */}
+          <Route 
+            path="/pix-payment/:orderId" 
+            element={
+              authState.isAuthenticated ? (
+                <PixPaymentWrapper onOrderSuccess={handleOrderSuccess} />
+              ) : (
+                <Navigate to="/login" state={{ from: '/pix-payment' }} />
+              )
+            } 
+          />
 
-          {/* Adicione estas novas rotas */}
-          <Route path="/success" element={<SuccessPage />} />
-          <Route path="/error" element={<ErrorPage />} />
-          <Route path="/pending" element={<PendingPage />} />
+          {/* ROTA PARA A PÁGINA DE SUCESSO DO PAGAMENTO */}
+          <Route path="/payment-success" element={
+            <div className="payment-success-page">
+              <h2>🎉 Pedido Confirmado! 🎉</h2>
+              <p>Seu pagamento foi recebido e seu pedido está sendo processado. Em breve você receberá um e-mail com os detalhes.</p>
+              <button onClick={() => navigate('/my-orders')} className="btn btn-primary">Ver Meus Pedidos</button>
+              <button onClick={() => navigate('/')} className="btn btn-secondary">Voltar para a Loja</button>
+            </div>
+          } />
 
+          {/* Rota de fallback para 404 - Mantenha no final */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </main>
